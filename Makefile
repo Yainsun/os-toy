@@ -45,16 +45,16 @@ all: $(S_OBJECTS) $(C_OBJECTS) link update_fd
 
 link:
 	@echo 链接内核文件...
-	$(LD) $(LD_FLAGS) $(S_OBJECTS) $(C_OBJECTS) -o hx_kernel
+	$(LD) $(LD_FLAGS) $(S_OBJECTS) $(C_OBJECTS) -o hanfeng_kernel
 
 .PHONY:clean
 clean:
-	$(RM) $(S_OBJECTS) $(C_OBJECTS) hx_kernel
+	$(RM) $(S_OBJECTS) $(C_OBJECTS) hanfeng_kernel
 
 .PHONY:update_fd
 update_fd:
 	sudo mount floppy.img /mnt/kernel
-	sudo cp hx_kernel /mnt/kernel/hx_kernel
+	sudo cp hanfeng_kernel /mnt/kernel/hanfeng_kernel
 	sleep 1
 	sudo umount /mnt/kernel
 
@@ -68,7 +68,7 @@ umount_image:
 
 .PHONY:iso
 iso:
-	cp hx_kernel isodir/boot/
+	cp hanfeng_kernel isodir/boot/
 	grub2-mkrescue -o hanfeng.iso isodir
 
 .PHONY:runiso
@@ -81,7 +81,7 @@ runfd:
 
 .PHONY:qemu
 qemu:
-	qemu -m 128 -hda disk.img -kernel hx_kernel
+	qemu -m 128 -hda disk.img -kernel hanfeng_kernel
 
 .PHONY:debug
 debug:
