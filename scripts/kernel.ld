@@ -6,7 +6,7 @@
  *      HanFeng   2025-08-22 14:53:17
  */
 
-ENTRY(start)
+ENTRY(start1)
 SECTIONS
 {
         . = 0x100000;

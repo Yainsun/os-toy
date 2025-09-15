@@ -1,23 +1,16 @@
 #!Makefile
-
+#
 # --------------------------------------------------------
 #
 #    hurlex 这个小内核的 Makefile
-#
 #    默认使用的C语言编译器是 GCC、汇编语言编译器是 nasm
 #
-#        qianyi.lh    2014/11/04   12:08:13
+#	 HanFeng  2025-09-15 09:26:10
+#
 # --------------------------------------------------------
+#
 
-# --------------------------------------------------------
-#
-#    hanfeng 这个小内核的 Makefile
-#
-#    默认使用的C语言编译器是 GCC、汇编语言编译器是 nasm
-#
-#        HanFeng     2025/08/22  10:18:52
-# --------------------------------------------------------
-
+# patsubst 处理所有在 C_SOURCES 字列中的字（一列文件名），如果它的 结尾是 '.c'，就用 '.o' 把 '.c' 取代
 C_SOURCES = $(shell find . -name "*.c")
 C_OBJECTS = $(patsubst %.c, %.o, $(C_SOURCES))
 S_SOURCES = $(shell find . -name "*.s")
@@ -27,12 +20,11 @@ CC = gcc
 LD = ld
 ASM = nasm
 
-C_FLAGS = -std=c99 -c -m32 -Wall -Wextra -ggdb -gstabs+ -ffreestanding \
-                 -I. -Iinclude -Iarch/i386 -Iarch/i386/include -fno-stack-protector
-LD_FLAGS = -T scripts/kernel.ld -nostdlib -m elf_i386
+C_FLAGS = -c -Wall -m32 -ggdb -gstabs+ -nostdinc -fno-builtin -fno-stack-protector -I include
+LD_FLAGS = -T scripts/kernel.ld -m elf_i386 -nostdlib
 ASM_FLAGS = -f elf -g -F stabs
 
-all: $(S_OBJECTS) $(C_OBJECTS) link update_fd
+all: $(S_OBJECTS) $(C_OBJECTS) link update_image
 
 # The automatic variable `$<' is just the first prerequisite
 .c.o:
@@ -51,8 +43,8 @@ link:
 clean:
 	$(RM) $(S_OBJECTS) $(C_OBJECTS) hanfeng_kernel
 
-.PHONY:update_fd
-update_fd:
+.PHONY:update_image
+update_image:
 	sudo mount floppy.img /mnt/kernel
 	sudo cp hanfeng_kernel /mnt/kernel/hanfeng_kernel
 	sleep 1
@@ -66,29 +58,18 @@ mount_image:
 umount_image:
 	sudo umount /mnt/kernel
 
-.PHONY:iso
-iso:
-	cp hanfeng_kernel isodir/boot/
-	grub2-mkrescue -o hanfeng.iso isodir
-
-.PHONY:runiso
-runiso:
-	qemu -m 128 -hda disk.img -cdrom hanfeng.iso -boot d
-
-.PHONY:runfd
-runfd:
-	qemu -m 128 -hda disk.img -fda floppy.img -boot a
-
 .PHONY:qemu
 qemu:
-	qemu -m 128 -hda disk.img -kernel hanfeng_kernel
+	qemu -fda floppy.img -boot a	
+	#add '-nographic' option if using server of linux distro, such as fedora-server,or "gtk initialization failed" error will occur.
+
+.PHONY:bochs
+bochs:
+	bochs -f scripts/bochsrc.txt
 
 .PHONY:debug
 debug:
-	qemu -S -s -m 128 -hda disk.img -fda floppy.img -boot a &
+	qemu -S -s -fda floppy.img -boot a &
 	sleep 1
 	cgdb -x scripts/gdbinit
 
-.PHONY:code_line_count
-code_line_count:
-	find . -type f -name "*.[c|h|s]" -exec cat {} \; | wc -l
