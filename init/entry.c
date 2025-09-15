@@ -32,6 +32,14 @@ int kern_entry()
 	*input++ = 'o'; *input++ = color;
 	*input++ = ','; *input++ = color;
 	*input++ = ' '; *input++ = color;
+	*input++ = 'H'; *input++ = color;
+	*input++ = 'a'; *input++ = color;
+	*input++ = 'n'; *input++ = color;
+	*input++ = 'F'; *input++ = color;
+	*input++ = 'e'; *input++ = color;
+	*input++ = 'n'; *input++ = color;
+	*input++ = 'g'; *input++ = color;
+	*input++ = ' '; *input++ = color;
 	*input++ = 'O'; *input++ = color;
 	*input++ = 'S'; *input++ = color;
 	*input++ = ' '; *input++ = color;
